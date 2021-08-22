@@ -1,1 +1,596 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>xyz</title>
+    <style type="text/css">
+        *,
+*:after,
+*:before {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+:root {
+    --viewport-ratio: calc(1vh / 1vw);
+    font-size: calc(0.4em + 0.5vmin);
+
+    /* Colors */
+    --cat-color: rgb(31, 30, 30);
+    --cat-color-03: hsl(0, 1%, 3%);
+    --cat-color-05: hsl(0, 1%, 5%);
+    --cat-color-07: hsl(0, 1%, 7%);
+    --cat-color-09: hsl(0, 1%, 9%);
+    --cat-color-12: hsl(0, 1%, 12%);
+    --cat-color-17: hsl(0, 1%, 17%); /* base color */
+    --cat-color-22: hsl(0, 1%, 22%);
+    --cat-color-27: hsl(0, 1%, 27%);
+    --cat-color-32: hsl(0, 1%, 32%);
+    --cat-color-37: hsl(0, 1%, 37%);
+
+    --shadow-color-10: hsla(0, 1%, 10%, 0.5);
+    --shadow-color-15: hsla(0, 1%, 15%, 0.5);
+    --shadow-color-20: hsla(0, 1%, 20%, 0.5);
+    --shadow-color-25: hsla(0, 1%, 25%, 0.5);
+
+    /* Animation timing */
+    --relax-delay: 7300ms;
+    --relax-animation: ease-in reverse var(--relax-delay) forwards;
+}
+
+body {
+    background: rgb(192, 113, 110);
+    width: 100vw;
+    height: 100vh;
+}
+
+.window {
+    position: absolute;
+    display: block;
+    bottom: 5rem;
+    left: 5rem;
+    height: 55rem;
+    width: 40rem;
+    background: repeating-linear-gradient(
+        90deg,
+        #5df3b9,
+        #5df3b9 4rem,
+        #50afaf 4rem,
+        #50afaf 8rem,
+        #5df3b9 8rem
+    );
+    border: 2rem solid rgb(50, 50, 50);
+    box-shadow: inset -0.5rem 0.5rem rgb(40, 40, 40),
+        inset 0.5rem -0.5rem rgb(60, 60, 60),
+        -0.5rem 0.5rem 0.5rem rgba(0, 0, 0, 0.5);
+    z-index: -100;
+}
+
+.window::before {
+    content: "";
+    position: absolute;
+    bottom: -5rem;
+    left: -3rem;
+    width: 42rem;
+    height: 3rem;
+    background: rgb(100, 100, 100);
+    border-radius: 0 0 20% 20%;
+    box-shadow: inset -0.5rem 0.5rem 0.5rem rgba(70, 70, 70, 0.5);
+}
+.fly {
+    position: absolute;
+    left: 1rem;
+    bottom: 45rem;
+    width: 0.25rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: #000;
+    z-index: 20;
+    transform: rotate(45deg);
+    animation: fly-move 4000ms ease-in forwards,
+        fly-out 1000ms linear forwards 6700ms;
+}
+
+.fly::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -0.25rem;
+    width: 0.25rem;
+    height: 0.5rem;
+    background-color: rgba(250, 250, 250, 0.7);
+    border-radius: 50% 0 0 50%;
+    animation: wings-move 200ms ease-in-out infinite;
+}
+
+.cat-tree {
+    position: absolute;
+    left: 5rem;
+    bottom: 0;
+    width: 20rem;
+    height: 10rem;
+    z-index: 10;
+}
+
+.perch {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 20rem;
+    height: 2rem;
+    border-radius: 1.5rem;
+    background: rgb(240, 160, 95);
+    box-shadow: inset 0.25rem -0.5rem 0.5rem rgba(255, 190, 125, 0.5),
+        inset -0.25rem 0.5rem 0.5rem rgba(190, 130, 65, 0.5);
+}
+
+.scratching-post {
+    position: absolute;
+    bottom: 0.5rem;
+    left: 7.5rem;
+    width: 5rem;
+    height: 7.5rem;
+    background: rgb(230, 230, 170);
+    background: repeating-linear-gradient(
+        to bottom,
+        rgb(230, 230, 170),
+        rgb(230, 230, 170) 0.5rem,
+        rgb(230, 230, 170) 0.5rem,
+        rgb(200, 200, 140) 0.6rem,
+        rgb(200, 200, 140) 0.65rem
+    );
+    box-shadow: inset -0.5rem 0.5rem 0.5rem rgba(200, 200, 140, 0.5);
+}
+
+.cat-container {
+    box-sizing: content-box;
+    position: relative;
+    height: 30rem;
+    width: 20rem;
+    left: 5rem;
+    bottom: 0;
+    z-index: inherit;
+}
+
+.cat {
+    position: absolute;
+    bottom: 10rem;
+    left: 4rem;
+    height: 30rem;
+    width: 20rem;
+}
+
+.head {
+    position: absolute;
+    top: 3rem;
+    left: 2.5rem;
+    width: 15rem;
+    height: 12rem;
+    z-index: 10;
+    animation: head-move 400ms linear 4100ms forwards,
+        head-move 600ms var(--relax-animation);
+}
+
+.ears {
+    position: absolute;
+    top: -1.5rem;
+    width: 6rem;
+    height: 6rem;
+    border-radius: 100% 0% 30% 70% / 30% 0% 100% 70%;
+    background-color: var(--cat-color-27);
+    border: 1.25rem solid var(--cat-color-17);
+}
+.ear-left {
+    left: 0;
+    transform: rotate(285deg);
+    box-shadow: inset -0.25rem -0.25rem 0.25rem var(--shadow-color-15);
+}
+
+.ear-right {
+    right: 0;
+    transform: rotate(-15deg);
+    box-shadow: inset 0.25rem 0.25rem 0.25rem var(--shadow-color-15);
+}
+
+.hair {
+    position: absolute;
+    top: -1.5rem;
+    left: 7rem;
+    width: 3rem;
+    height: 2rem;
+    background: var(--cat-color-17);
+    clip-path: polygon(
+        30% 10%,
+        25% 90%,
+        90% 0%,
+        50% 100%,
+        90% 50%,
+        85% 95%,
+        0% 100%
+    );
+}
+
+.face {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 15rem;
+    height: 12rem;
+    background-color: var(--cat-color-17);
+    border-radius: 40% 40% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: inset -0.5rem 0.5rem 0.5rem var(--shadow-color-10),
+        inset 0.5rem -0.5rem 0.5rem var(--shadow-color-25);
+    z-index: 10;
+}
+
+.eyes {
+    position: absolute;
+    top: 3rem;
+    width: 5rem;
+    height: 4.5rem;
+    border: none;
+    background: hsl(45, 90%, 60%);
+    /* box-shadow: inset 0 0.5rem var(--cat-color-17); */
+    border-radius: 50%;
+}
+
+.eye-left {
+    left: 1.75rem;
+}
+
+.eye-right {
+    right: 1.75rem;
+}
+
+.pupil {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    height: 70%;
+    width: 70%;
+    background-color: var(--cat-color-03);
+    border-radius: 50%;
+    animation: pupil-move 4000ms ease-in forwards,
+        pupil-grow 800ms linear 4300ms forwards,
+        pupil-grow 600ms var(--relax-animation);
+}
+
+.pupil::before,
+.pupil::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(ellipse, #fff, rgb(189, 188, 188));
+}
+
+.pupil::before {
+    top: 40%;
+    right: 30%;
+    width: 0.2rem;
+    height: 0.2rem;
+}
+
+.pupil::after {
+    top: 20%;
+    right: 20%;
+    width: 0.4rem;
+    height: 0.6rem;
+    transform: rotate(-45deg);
+}
+
+.nose {
+    position: relative;
+    top: 8rem;
+    border-radius: 50% 50% 50% 50% / 40% 40% 70% 70%;
+    width: 2rem;
+    height: 1rem;
+    margin: auto;
+    background: rgb(200, 80, 120);
+    box-shadow: inset -0.25rem 0.25rem 0.2rem rgba(170, 50, 90, 0.5),
+        inset 0.25rem -0.25rem 0.2rem rgba(220, 100, 140, 0.5);
+}
+
+.whiskers {
+    position: absolute;
+    top: 8rem;
+    width: 6rem;
+    height: 0.1rem;
+    background: var(--cat-color-07);
+    border-radius: 50%;
+}
+
+.whisker-left {
+    left: -0.5rem;
+    transform: rotate(7deg);
+}
+
+.whisker-right {
+    right: -0.5rem;
+    transform: rotate(-7deg);
+}
+
+.whisker-left::after,
+.whisker-right::after {
+    position: absolute;
+    content: "";
+    top: 1.25rem;
+    width: 6rem;
+    height: 0.1rem;
+    border-radius: 50%;
+    background: var(--cat-color-07);
+}
+
+.whisker-left::after {
+    transform: rotate(-15deg);
+}
+
+.whisker-right::after {
+    transform: rotate(15deg);
+}
+
+.mouth {
+    position: absolute;
+    top: 9rem;
+    left: 5rem;
+    width: 5rem;
+    height: 2rem;
+    margin: auto;
+    border-radius: 50%;
+}
+
+.mouth::before,
+.mouth::after {
+    position: absolute;
+    content: "";
+    width: 2rem;
+    height: 1rem;
+    border-radius: 0 0 50% 50%;
+    border-bottom: 0.1rem solid var(--cat-color-03);
+}
+
+.mouth::before {
+    left: 2.45rem;
+    border-left: 0.1rem solid var(--cat-color-03);
+    box-shadow: inset 0.15rem -0.15rem 0.2rem var(--shadow-color-25),
+        -0.15rem 0.25rem 0.2rem var(--shadow-color-10);
+}
+
+.mouth::after {
+    right: 2.45rem;
+    border-right: 0.1rem solid var(--cat-color-03);
+    box-shadow: inset -0.15rem -0.15rem 0.2rem var(--shadow-color-25),
+        0.15rem 0.25rem 0.2rem var(--shadow-color-10);
+}
+
+.body {
+    position: absolute;
+    left: 6rem;
+    bottom: 2rem;
+    width: 8rem;
+    height: 15rem;
+    background-color: var(--cat-color-17);
+    box-shadow: inset -0.5rem 0.5rem 0.5rem var(--shadow-color-10),
+        inset 0.5rem 0.5rem 0.5rem var(--shadow-color-15);
+    border-radius: 50%;
+    z-index: 7;
+    animation: body-move 400ms linear 4100ms forwards,
+        body-move 600ms var(--relax-animation);
+}
+
+.body-bottom {
+    position: absolute;
+    bottom: 1rem;
+    left: 5rem;
+    height: 9rem;
+    width: 10rem;
+    border-radius: 50% 50% 40% 40%;
+    background: var(--cat-color-17);
+    z-index: 6;
+}
+
+/* legs */
+/* .body-bottom::after  */
+.legs {
+    position: absolute;
+    bottom: 0rem;
+    left: 5rem;
+    height: 2rem;
+    width: 10rem;
+    border-radius: 50% 50% 20% 20% / 80%;
+    background: var(--cat-color-17);
+    box-shadow: inset -0.5rem 0.5rem 0.25rem var(--shadow-color-10);
+    z-index: 5;
+}
+
+.hands {
+    position: absolute;
+    bottom: 1.5rem;
+    width: 2.5rem;
+    height: 8rem;
+    border-radius: 10% 10% 0 0;
+    background: var(--cat-color-17);
+    border: none;
+    border-right: 0.1rem solid var(--cat-color-09);
+    border-left: 0.1rem solid var(--cat-color-09);
+    box-shadow: inset 0.15rem -0.15rem 0.15rem var(--shadow-color-15),
+        0.15rem 0.15rem 0.15rem var(--shadow-color-10);
+    z-index: 12;
+}
+
+.hand-left {
+    left: 6.5rem;
+}
+
+.hand-right {
+    right: 6.5rem;
+}
+
+.paw {
+    position: absolute;
+    bottom: -1.5rem;
+    width: 3rem;
+    height: 2rem;
+    border: 0.1rem solid var(--cat-color-09);
+    background: var(--cat-color-17);
+    box-shadow: inset 0.25rem -0.25rem 0.25rem var(--shadow-color-20),
+        inset -0.25rem 0.25rem 0.25rem var(--shadow-color-10);
+}
+
+.hand-left > .paw {
+    left: -0.5rem;
+    border-radius: 50% 50% 20% 20% / 50%;
+}
+
+.hand-right > .paw {
+    right: -0.5rem;
+    border-radius: 50% 50% 20% 20% / 50%;
+}
+
+.tail {
+    position: absolute;
+    bottom: -7rem;
+    left: 7rem;
+    width: 2rem;
+    height: 8rem;
+    border-radius: 0 0 50% 50%;
+    background: var(--cat-color-17);
+    transform-origin: 100% 0;
+    animation: tail-move 800ms alternate-reverse ease-in-out infinite;
+}
+
+@keyframes pupil-move {
+    0% {
+        transform: translate(10%, 10%);
+    }
+
+    50% {
+        transform: translate(5%, 15%);
+    }
+
+    75% {
+        transform: translate(20%, 10%);
+    }
+
+    100% {
+        transform: translate(15%, 15%);
+    }
+}
+
+@keyframes pupil-grow {
+    from {
+        transform: translate(15%, 15%) scale(1);
+    }
+
+    to {
+        transform: translate(15%, 15%) scale(1.1);
+    }
+}
+
+@keyframes wings-move {
+    0% {
+        background: rgba(250, 250, 250, 0.7);
+    }
+
+    100% {
+        background: rgba(250, 250, 250, 0.5);
+        transform: scaleX(0.7);
+    }
+}
+
+@keyframes fly-move {
+    0% {
+        transform: translate(0, 0) rotate(45deg);
+    }
+
+    50% {
+        transform: translate(5rem, 15rem) rotate(45deg);
+    }
+
+    75% {
+        transform: translate(20rem, 10rem) rotate(65deg);
+    }
+
+    100% {
+        transform: translate(14rem, 17rem) rotate(90deg);
+    }
+}
+
+@keyframes fly-out {
+    from {
+        transform: translate(14rem, 17rem) rotate(90deg);
+    }
+
+    to {
+        transform: translate(-14rem, 27rem) rotate(90deg);
+    }
+}
+
+@keyframes head-move {
+    from {
+        transform: translate(0, 0);
+    }
+    to {
+        transform: translate(0, 5%);
+    }
+}
+
+@keyframes body-move {
+    from {
+        transform: scale(1, 1);
+    }
+    to {
+        transform: scale(1.1, 0.9);
+    }
+}
+
+@keyframes tail-move {
+    0% {
+        transform: rotate(-35deg);
+    }
+    100% {
+        transform: rotate(35deg);
+    }
+}
+
+    </style>
+</head>
+</html>
+
+    <body>
+        <div class="window">
+            <div class="cat-tree">
+                <div class="perch"></div>
+                <div class="scratching-post"></div>
+            </div>
+            <div class="cat">
+                <div class="head">
+                    <div class="ears ear-left"></div>
+                    <div class="ears ear-right"></div>
+                    <div class="hair"></div>
+                    <div class="face">
+                        <div class="eyes eye-left">
+                            <div class="pupil"></div>
+                        </div>
+                        <div class="eyes eye-right">
+                            <div class="pupil"></div>
+                        </div>
+
+                        <div class="nose"></div>
+                        <div class="whiskers whisker-left"></div>
+                        <div class="whiskers whisker-right"></div>
+                        <div class="mouth"></div>
+                    </div>
+                </div>
+                <div class="body"></div>
+                <div class="body-bottom"></div>
+                <div class="legs"></div>
+                <div class="tail"></div>
+                <div class="hands hand-left"><div class="paw"></div></div>
+                <div class="hands hand-right"><div class="paw"></div></div>
+            </div>
+            <div class="fly"></div>
+        </div>
+    </body>
+
 
